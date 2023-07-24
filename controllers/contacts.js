@@ -6,7 +6,7 @@ const {
   updateContact,
 } = require("../models/contacts");
 
-const HttpError = require("../helpers/httpError");
+const HttpError = require("../helpers/HttpError");
 const ctrlWrapper = require("../helpers/ctrlWrapper");
 
 const getAll = async (req, res) => {
