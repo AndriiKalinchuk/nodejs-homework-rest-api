@@ -1,5 +1,4 @@
 const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("../middlewares");
 
 const Joi = require("joi");
 
@@ -25,6 +24,14 @@ const userSchema = new Schema(
   },
   { versionKey: false, timestamps: true }
 );
+
+const handleMongooseError = (error, data, next) => {
+  const { name, code } = error;
+  const status = name === "MongoServerError" && code === 11000 ? 409 : 400;
+  error.status = status;
+  next();
+};
+
 userSchema.post("save", handleMongooseError);
 
 const registerSchema = Joi.object({
