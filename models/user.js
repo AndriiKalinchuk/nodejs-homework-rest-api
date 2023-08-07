@@ -4,6 +4,10 @@ const Joi = require("joi");
 
 const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
+const handleMongooseError = require("../middlewares/handleMongooseError");
+
+const allowedSubscription = ["starter", "pro", "business"];
+
 const userSchema = new Schema(
   {
     password: {
@@ -17,7 +21,7 @@ const userSchema = new Schema(
     },
     subscription: {
       type: String,
-      enum: ["starter", "pro", "business"],
+      enum: allowedSubscription,
       default: "starter",
     },
     token: {
@@ -27,13 +31,6 @@ const userSchema = new Schema(
   },
   { versionKey: false, timestamps: true }
 );
-
-const handleMongooseError = (error, data, next) => {
-  const { name, code } = error;
-  const status = name === "MongoServerError" && code === 11000 ? 409 : 400;
-  error.status = status;
-  next();
-};
 
 userSchema.post("save", handleMongooseError);
 
@@ -47,9 +44,16 @@ const loginSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
+const subscriptionSchema = Joi.object({
+  subscription: Joi.string()
+    .valid(...allowedSubscription)
+    .required(),
+});
+
 const schemas = {
   registerSchema,
   loginSchema,
+  subscriptionSchema,
 };
 
 const User = model("user", userSchema);

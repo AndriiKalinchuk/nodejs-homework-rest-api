@@ -9,6 +9,12 @@ const getAll = async (req, res) => {
     skip,
     limit,
   }).populate("owner", "email");
+  // const favorite = req.query.favorite;
+  // const filter = {};
+  // if (favorite !== undefined) {
+  //   filter.favorite = favorite;
+  // }
+  // const result = await Contact.find(filter);
   res.json(result);
 };
 
